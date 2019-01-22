@@ -6,7 +6,7 @@
 class ClosedLoopMotor
 {
   public:
-    ClosedLoopMotor(int encA, int encB, int motorA, int motorB, int motorEn, float Kp, float Ki, float Kd, float bias, int cpm);
+    ClosedLoopMotor(int encA, int encB, int motorA, int motorB, int motorEn, float Kp, float Ki, float Kd, float bias, int cpm, int motorMin, int motorMax);
     void setVel(float vel);
     float getVel();
     int getCounts();
@@ -16,21 +16,23 @@ class ClosedLoopMotor
     int _encB;
     int _motorA;
     int _motorB;
-    int _motorC;
+    int _motorEn;
     float _Kp;
     float _Ki;
     float _Kd;
     long _encoderCount;
-    long _previousTime;
-    long _previousEncoderCount;
+    long previousTime;
+    long previousEncoderCount;
     float _vel;
-    float _velGoal;
+    float velGoal;
     void encoderChange();
     int _cpm;
     void drive(float speed);
-    float _previousError;
+    float previousError;
     float _sum;
     float _bias;
+    float _motorMin;
+    float _motorMax;
 };
 
 #endif
