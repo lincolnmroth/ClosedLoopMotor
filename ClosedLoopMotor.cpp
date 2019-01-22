@@ -2,7 +2,7 @@
 #include "ClosedLoopMotor.h"
 
 
-ClosedLoopMotor::ClosedLoopMotor(int encA, int encB, int motorA, int motorB, int motorEn, float Kp, float Ki, float Kd, int cpm)
+ClosedLoopMotor::ClosedLoopMotor(int encA, int encB, int motorA, int motorB, int motorEn, float Kp, float Ki, float Kd, float bias, int cpm)
 {
   //ENCODER A PIN MUST MUST MUST BE AN INTERRUPT PIN!!!!
   _encA = encA;
@@ -17,6 +17,9 @@ ClosedLoopMotor::ClosedLoopMotor(int encA, int encB, int motorA, int motorB, int
   _encoderCount = 0;
   _vel = 0;
   _velGoal = 0;
+  _sum = 0;
+  _previousError = 0;
+  _bias = bias;
 
   pinMode(motorA, OUTPUT);
   pinMode(motorB, OUTPUT);
@@ -54,12 +57,17 @@ void ClosedLoopMotor::compute()
   _vel = (_encoderCount - _previousEncoderCount)/(currentTime - _previousTime) * (60/_cpm)
 
   float error = _velGoal - _vel;
-  float sum = 0;
+  _sum = _sum + (error*(currentTime-_previousTime))
+  float derivative = (_previousError/(currentTime-_previousTime));
   float p = _Kp * error;
   float i = _Ki * sum;
-  float d = 0;
-  drive(constrain(p+i+d, -255, 255));
+  float d = _Kd * derivative;
+  drive(constrain(p+i+d+_bias, -255, 255));
 
+
+  _previousEncoderCount = _encoderCount;
+  _previousTime = currentTime;
+  _previousError = error;
 }
 
 void ClosedLoopMotor::drive(float speed)//-255 to 255
