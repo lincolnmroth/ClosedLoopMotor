@@ -7,7 +7,7 @@ class ClosedLoopMotor
 {
   public:
     ClosedLoopMotor(int encA, int encB, int motorA, int motorB, int motorEn, float Kp, float Ki, float Kd, int cpm);
-    void setVel(int vel);
+    void setVel(float vel);
     float getVel();
     int getCounts();
     void compute();

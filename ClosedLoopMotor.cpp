@@ -52,6 +52,32 @@ void ClosedLoopMotor::compute()
 {
   long currentTime = millis();
   _vel = (_encoderCount - _previousEncoderCount)/(currentTime - _previousTime) * (60/_cpm)
+
+  float error = _velGoal - _vel;
+  float sum = 0;
+  float p = _Kp * error;
+  float i = _Ki * sum;
+  float d = 0;
+  drive(constrain(p+i+d, -255, 255));
+
+}
+
+void ClosedLoopMotor::drive(float speed)//-255 to 255
+{
+  if (speed > 0){
+    digitalWrite(_motorA, HIGH);
+    digitalWrite(_motorB, LOW);
+    analogWrite(_motorEn, abs(speed))
+  } else {
+    digitalWrite(_motorA, LOW);
+    digitalWrite(_motorB, HIGH);
+    analogWrite(_motorEn, abs(speed))
+  }
+}
+void ClosedLoopMotor::setVel(float vel)
+{
+  _velGoal = vel;
+
 }
 
 int ClosedLoopMotor::getCounts()
